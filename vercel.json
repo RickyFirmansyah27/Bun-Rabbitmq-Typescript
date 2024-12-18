@@ -10,9 +10,17 @@
     {
       "src": "src/index.ts",
       "use": "@vercel/node"
+    },
+    {
+      "src": "api/queue.ts",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
+    {
+      "src": "/worker/(.*)",
+      "dest": "api/queue.ts"
+    },
     {
       "src": "/(.*)",
       "dest": "src/index.ts"

@@ -5,9 +5,7 @@ import { createLogger, format, transports } from 'winston';
 import { Logtail } from '@logtail/node';
 import { LogtailTransport } from '@logtail/winston';
 
-const logtail = new Logtail(
-    process.env.LOGTAIL_API_KEY as string
-);
+const logtail = new Logtail('qLeeazh2QzV47U2f7EnoMhT8');
 
 const { combine, timestamp, printf } = format;
 

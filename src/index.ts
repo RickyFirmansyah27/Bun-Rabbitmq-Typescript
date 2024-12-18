@@ -49,11 +49,6 @@ app.get('/queue', async (c) => {
   }
 });
 
-// 404 handler
-app.notFound((c) => c.json({ 
-  message: 'Route not found', 
-  status: 404 
-}, 404));
 
 // Error handler
 app.onError((error, c) => {
