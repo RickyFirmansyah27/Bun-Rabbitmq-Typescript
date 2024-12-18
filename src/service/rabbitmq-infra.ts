@@ -1,15 +1,11 @@
 import { config } from 'dotenv';
-config({ path: '../../.env' });
+config({ path: '.././.env' });
 import amqp from 'amqplib';
 import { handleError, Logger } from '../helper';
 
 type MessagePayload = Record<string, unknown>;
 
-const RABBITMQ_URL = process.env.RABBITMQ_URL;
-if (!RABBITMQ_URL) {
-    throw new Error("Environment variable RABBITMQ_URL is not set.");
-}
-
+const RABBITMQ_URL = process.env.RABBITMQ_URL as string;
 let connection: amqp.Connection | null = null; // Maintain connection state
 
 // RabbitMQ connection setup with auto-reconnect

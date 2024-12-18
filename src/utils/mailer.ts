@@ -11,9 +11,9 @@ export const UserCreateRequestEmail = async (email: string): Promise<void> => {
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    Logger.log("Email sent:", info.response);
+    Logger.info("Email sent:", info.response);
   } catch (error) {
-    Logger.log("Error:", error);
+    Logger.error("Error:", error);
     throw error;
   }
 };
