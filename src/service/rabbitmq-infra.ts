@@ -19,16 +19,6 @@ export const connectRabbitMQ = async (qName: string): Promise<amqp.Channel> => {
             Logger.info('Connecting to RabbitMQ...');
             connection = await amqp.connect(RABBITMQ_URL);
 
-            // Handle connection errors
-            connection.on('error', (err) => {
-                Logger.error('RabbitMQ connection error:', err.message);
-            });
-
-            connection.on('close', () => {
-                Logger.warn('RabbitMQ connection closed. Reconnecting...');
-                setTimeout(reconnect, 5000); // Retry after 5 seconds
-            });
-
             const channel = await connection.createChannel();
             await channel.assertExchange('myapp-rabbitmq', 'direct', { durable: true });
             Logger.info(`Connected to RabbitMQ and listening on queue: ${qName}`);

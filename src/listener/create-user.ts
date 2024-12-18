@@ -17,12 +17,12 @@ const transporter = nodemailer.createTransport({
 export const handleCreateUser = async (payload: MessagePayload): Promise<void> => {
     Logger.info('Processing payload:', payload);
     try {
-      await transporter.sendMail({
-        from: 'akashiseijurou414@gmail.com',
-        to: 'uchihaitaci4@gmail.com',
-        subject: 'test',
-        text: `send email testing`,
-      });
+      // await transporter.sendMail({
+      //   from: 'akashiseijurou414@gmail.com',
+      //   to: 'uchihaitaci4@gmail.com',
+      //   subject: 'test',
+      //   text: `send email testing`,
+      // });
       await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
       Logger.error('Error sending email:', error);
