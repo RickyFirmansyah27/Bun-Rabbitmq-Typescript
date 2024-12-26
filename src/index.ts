@@ -1,82 +1,34 @@
-import { config } from 'dotenv';
 import { Hono } from 'hono';
-import { Logger } from './helper/logger';
-import { serverless } from './helper';
 import { listeningQueue } from './listener';
 import { handleCreateUser } from './listener/create-user';
-
-config();
+import schedule from 'node-schedule';
+import { Logger } from './helper/logger';
+import { createServer } from 'http';
 
 const app = new Hono();
 const port = process.env.PORT || 8989;
 
-async function startListener() {
+// Jadwal cron job setiap 3 menit
+schedule.scheduleJob('*/3 * * * *', async () => {
   try {
     Logger.info('Starting listener...');
     await listeningQueue('USER_REGISTRATION', handleCreateUser);
     Logger.info('Listener started successfully.');
   } catch (error) {
-    Logger.error('Failed to start listener:', error);
-    throw error;
+    Logger.error('Error starting listener:', error);
   }
-}
+});
 
+// Routes
 app.get('/', (c) => {
-  return c.json({ 
-    message: 'Service is running', 
-    timestamp: new Date().toISOString() 
-  });
+  return c.json({ message: 'Cron job is running every 3 minutes.' });
 });
 
-// Queue management route
-app.get('/queue', async (c) => {
-  try {
-    Logger.info('Manually triggering queue listener...');
+// 404 handler
+app.notFound((c) => c.text('Route not found', 404));
 
-    // If listeningQueue doesn't return a value, just await it
-    await listeningQueue('USER_REGISTRATION', handleCreateUser);
-    
-    return c.json({ 
-      message: 'USER_REGISTRATION queue processing initiated',
-      processed: true 
-    });
-  } catch (error) {
-    Logger.error('Queue processing failed:', error);
-    return c.json({ 
-      message: 'Queue processing failed', 
-      error: error instanceof Error ? error.message : 'Unknown error' 
-    }, 500);
-  }
-});
-
-
-// Error handler
-app.onError((error, c) => {
-  Logger.error('Unhandled application error:', error);
-  return c.json({ 
-    message: 'Internal server error', 
-    error: error instanceof Error ? error.message : 'Unknown error' 
-  }, 500);
-});
-
-// Create serverless app
-const server = serverless(app);
-
-// Server startup with listener
-async function startServer() {
-  try {
-    // Start the listener
-    await startListener();
-
-    // Start the server
-    server.listen(port, () => {
-      Logger.info(`[Hono-Service] Server is running on port ${port}`);
-    });
-  } catch (error) {
-    Logger.error('Failed to start server and listener:', error);
-    process.exit(1);
-  }
-}
-
-// Initiate server startup
-startServer();
+Logger.info(`[Hono-Service] Server is running on port ${port}`)
+export default {
+  fetch: app.fetch,
+  port: port,
+};
