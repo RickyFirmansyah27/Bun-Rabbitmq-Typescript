@@ -3,7 +3,7 @@ import { listeningQueue } from './listener';
 import { handleCreateUser } from './listener/create-user';
 import schedule from 'node-schedule';
 import { Logger } from './helper/logger';
-import { serve } from '@hono/node-server'
+import { serve } from '@hono/node-server';
 
 const app = new Hono();
 const port = process.env.PORT || 8989;
@@ -27,11 +27,11 @@ app.get('/', (c) => {
 // 404 handler
 app.notFound((c) => c.text('Route not found', 404));
 
-// Menambahkan server untuk mendengarkan pada 0.0.0.0
+// Menambahkan server untuk mendengarkan pada 0.0.0.0 dan port 8989
 serve({
-  fetch: app.fetch,
-  port: 8989,
+  fetch: app.fetch, // Menambahkan app.fetch sebagai handler
+  port: Number(port), // Convert port to number
   hostname: '0.0.0.0'
-}, () => {
-  Logger.info(`[Hono-Service] Server is running on 0.0.0.0:8989`);
+}, () => { // Use callback function instead of Promise
+  Logger.info(`[Hono-Service] Server is running on http://0.0.0.0:${port}`);
 });
