@@ -1,12 +1,22 @@
+import { config } from 'dotenv';
 import { Hono } from 'hono';
+import { Logger } from './helper/logger';
+import { httpLogger } from './helper/http-logger';
+import { serverless } from './helper';
+import schedule from 'node-schedule';
 import { listeningQueue } from './listener';
 import { handleCreateUser } from './listener/create-user';
-import schedule from 'node-schedule';
-import { Logger } from './helper/logger';
-import { serve } from '@hono/node-server';
+
+config();
 
 const app = new Hono();
-const port = process.env.PORT || 3000; 
+const port = process.env.PORT || 8989;
+
+app.use('*', httpLogger);
+// Routes
+app.get('/', (c) => {
+  return c.json({ message: 'Cron job is running every 3 minutes.' });
+});
 
 schedule.scheduleJob('*/3 * * * *', async () => {
   try {
@@ -17,17 +27,10 @@ schedule.scheduleJob('*/3 * * * *', async () => {
     Logger.error('Error starting listener:', error);
   }
 });
-
-app.get('/', (c) => {
-  return c.json({ message: 'Cron job is running every 3 minutes.' });
-});
-
 app.notFound((c) => c.text('Route not found', 404));
 
-serve({
-  fetch: app.fetch,
-  port: typeof port === 'string' ? parseInt(port, 10) : port,
-  hostname: '0.0.0.0' 
-}, () => {
-  Logger.info(`[Hono-Service] Server is running on http://0.0.0.0:${port}`);
+const server = serverless(app);
+
+server.listen(port, () => {
+  Logger.info(`[Hono-Service] Server is running on port ${port}`);
 });
