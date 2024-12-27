@@ -31,6 +31,6 @@ app.notFound((c) => c.text('Route not found', 404));
 
 const server = serverless(app);
 
-server.listen(port, () => {
+server.listen(Number(port), '0.0.0.0', () => {
   Logger.info(`[Hono-Service] Server is running on port ${port}`);
 });
