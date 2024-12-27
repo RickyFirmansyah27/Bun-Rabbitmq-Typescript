@@ -4,7 +4,7 @@ import { UserCreateRequestEmail } from "../utils/mailer";
 type MessagePayload = Record<string, unknown>;
 
 export const handleCreateUser = async (payload: MessagePayload): Promise<void> => {
-  Logger.info('Processing payload:', payload);
+  Logger.info(`Processing payload: ${payload}`);
   try {
     await UserCreateRequestEmail('aicorex4@gmail.com');
     Logger.info('Email sent successfully.');
